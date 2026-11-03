@@ -65,3 +65,7 @@ from cold.views import TwoViews
 views = TwoViews(amp="cold", s_min=0.5, s_max=2.0, sigma_b=0.5, lam=0.0, rho=0.0)
 v1, v2 = views(x)        # x: (12, T) tensor, standardised per lead
 ```
+
+## License
+
+MIT

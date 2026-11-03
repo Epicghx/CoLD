@@ -1,10 +1,12 @@
 """Two-view generation for 12-lead ECGs.
 
-Every view is cropped, resampled, shifted and noised. The amplitude step then
-applies one of three laws:
+Every view is cropped, resampled, shifted and noised (T_v in the paper). The
+amplitude step then applies one of three laws, and noise of the same SD is
+added to every lead once more, so the noise floor does not depend on the gain:
   cold      per-lead gains and offsets drawn for both views from one Gaussian
             copula with lead coefficient `lam` and view coefficient `rho`
-  standard  one global gain per view, U(0.9, 1.1)
+  standard  one global gain per view, U(0.9, 1.1), with noise added only after
+            the gain, as in the MoCo-v2 baseline
   none      no amplitude change (the control)
 """
 import math
@@ -89,8 +91,9 @@ class TwoViews:
 
     def __call__(self, x):
         views = []
+        pre = dict(self.time, noise_std=0.0) if self.amp == "standard" else self.time
         for s, b in self._draws(x.shape[0]):
-            u = crop_shift(x.clone(), **self.time)
+            u = crop_shift(x.clone(), **pre)
             v = s[:, None] * u + b[:, None]
             if self.noise_std > 0:
                 v = v + self.noise_std * torch.randn_like(v)
