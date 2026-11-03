@@ -1,0 +1,21 @@
+# MoCo-v2 with standard views (one global gain per view)
+name: moco_vit
+seed: 42
+data:
+  root: data/code15
+views:
+  amp: standard
+  crop_min: 800
+  crop_max: 1000
+  shift_max: 50
+  noise_std: 0.01
+model:
+  encoder: vit_tiny
+  objective: moco
+  objective_kwargs: {proj_dim: 128, proj_hidden: 192, queue_size: 16384, temperature: 0.1}
+optim:
+  epochs: 50
+  batch_size: 256
+  blr: 1.5e-3          # lr = blr * batch_size / 256
+  wd: 0.05
+  warmup: 5

@@ -1,0 +1,26 @@
+# VICReg + CoLD, ViT-Tiny
+name: cold_vicreg_vit
+seed: 42
+data:
+  root: data/code15
+views:
+  amp: cold            # cold | standard | none
+  s_min: 0.5           # gains log-uniform in [s_min, s_max]
+  s_max: 2.0
+  sigma_b: 0.5         # offset SD
+  lam: 0.0             # lead coefficient
+  rho: 0.0             # view coefficient
+  crop_min: 800
+  crop_max: 1000
+  shift_max: 50
+  noise_std: 0.01
+model:
+  encoder: vit_tiny
+  objective: vicreg
+  objective_kwargs: {proj_dim: 768, proj_hidden: 768, sim_coeff: 25.0, std_coeff: 25.0, cov_coeff: 1.0}
+optim:
+  epochs: 50
+  batch_size: 256
+  blr: 1.5e-3          # lr = blr * batch_size / 256
+  wd: 0.05
+  warmup: 5

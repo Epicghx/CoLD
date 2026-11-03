@@ -1,0 +1,15 @@
+name: ptbxl_all71
+encoder: vit_tiny       # used only with --ckpt none
+data:
+  root: data/ptbxl
+  label_set: all71      # all71 | superclass | subclass | form | rhythm
+  train_frac: 1.0
+time_shift: 50
+dropout: 0.3
+optim:
+  epochs: 50
+  batch_size: 256
+  blr: 5.0e-4           # one-cycle peak = blr * max_lr_scale for the head
+  max_lr_scale: 10
+  layer_decay: 0.75
+  wd: 0.01

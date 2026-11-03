@@ -1,0 +1,21 @@
+# Control: crop, shift and noise only
+name: control_vit
+seed: 42
+data:
+  root: data/code15
+views:
+  amp: none
+  crop_min: 800
+  crop_max: 1000
+  shift_max: 50
+  noise_std: 0.01
+model:
+  encoder: vit_tiny
+  objective: moco
+  objective_kwargs: {proj_dim: 128, proj_hidden: 192, queue_size: 16384, temperature: 0.1}
+optim:
+  epochs: 50
+  batch_size: 256
+  blr: 1.5e-3          # lr = blr * batch_size / 256
+  wd: 0.05
+  warmup: 10

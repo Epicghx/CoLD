@@ -1,0 +1,26 @@
+# MoCo-v2 + CoLD, ResNet-1D-18
+name: cold_resnet18
+seed: 42
+data:
+  root: data/code15
+views:
+  amp: cold            # cold | standard | none
+  s_min: 0.5           # gains log-uniform in [s_min, s_max]
+  s_max: 2.0
+  sigma_b: 0.5         # offset SD
+  lam: 0.0             # lead coefficient
+  rho: 0.0             # view coefficient
+  crop_min: 800
+  crop_max: 1000
+  shift_max: 50
+  noise_std: 0.01
+model:
+  encoder: resnet1d_18
+  objective: moco
+  objective_kwargs: {proj_dim: 128, proj_hidden: 192, queue_size: 16384, temperature: 0.1}
+optim:
+  epochs: 50
+  batch_size: 256
+  blr: 1.5e-3          # lr = blr * batch_size / 256
+  wd: 0.05
+  warmup: 10
