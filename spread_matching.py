@@ -1,7 +1,4 @@
-"""Lower bounds on the gain range and the offset SD from unlabelled target recordings.
-
-    python spread_matching.py --ptbxl data/ptbxl
-"""
+"""python spread_matching.py --ptbxl data/ptbxl"""
 import argparse
 
 import numpy as np
@@ -18,7 +15,7 @@ def main():
     ap.add_argument("--sigma_b", type=float, default=0.5)
     args = ap.parse_args()
 
-    ds = PTBXL(args.ptbxl, range(1, 9))          # training folds, normalised as in fine-tuning
+    ds = PTBXL(args.ptbxl, range(1, 9))
     x = (np.asarray(ds.X[ds.idx], dtype=np.float32) - ds.mu) / ds.sd
     delta_b, delta_s = target_spread(x)
     ratio, sigma_b = bounds(delta_b, delta_s)

@@ -13,8 +13,7 @@ def pad_1024(x):
 
 
 class NpyDir(Dataset):
-    """Pretraining corpus: one array per .npy file at 100 Hz, (12, T) or (T, 12).
-    Recordings are centre-cropped or zero-padded to 1000 samples and standardised per lead."""
+    """One .npy per recording at 100 Hz, cropped or padded to 1000 samples, standardised per lead."""
 
     def __init__(self, root, file_list=None):
         self.root = Path(root)
@@ -38,7 +37,7 @@ class NpyDir(Dataset):
 
 
 class Synthetic(Dataset):
-    """Random 12-lead signals for a quick check of the pipeline without data."""
+    """Random signals for the smoke test."""
 
     def __init__(self, n=512, n_classes=0, seed=0):
         g = torch.Generator().manual_seed(seed)
@@ -78,9 +77,7 @@ def ptbxl_labels(db, scp, label_set):
 
 
 class PTBXL(Dataset):
-    """PTB-XL at 100 Hz from `prepare_ptbxl.py`. Folds 1-8 train, 9 validation, 10 test.
-    Records without a statement of the label set are dropped. Each lead is
-    normalised with the mean and SD of the training folds."""
+    """PTB-XL at 100 Hz, normalised per lead with the training-fold mean and SD."""
 
     def __init__(self, root, folds, label_set="all71", stats=None):
         root = Path(root)

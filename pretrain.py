@@ -1,8 +1,4 @@
-"""Two-view pretraining.
-
-    python pretrain.py --config configs/pretrain_cold_vit.yaml
-    python pretrain.py --config configs/pretrain_cold_vit.yaml --synthetic 512 --epochs 1
-"""
+"""python pretrain.py --config configs/pretrain_cold_vit.yaml"""
 import argparse
 import math
 import random
@@ -36,7 +32,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", required=True)
     ap.add_argument("--out", default="runs")
-    ap.add_argument("--synthetic", type=int, default=0, help="use N random recordings instead of the corpus")
+    ap.add_argument("--synthetic", type=int, default=0)
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--batch_size", type=int, default=None)
     args = ap.parse_args()
@@ -66,8 +62,6 @@ def main():
     out = Path(args.out) / cfg["name"]
     out.mkdir(parents=True, exist_ok=True)
     for ep in range(epochs):
-        # epoch-level schedules: linear warm-up then cosine for the learning rate,
-        # cosine from 0.99 to 0.999 for the momentum of MoCo / BYOL targets
         lr = lr0 * (ep + 1) / warmup if ep < warmup else 0.5 * lr0 * (1 + math.cos(math.pi * (ep - warmup) / max(1, epochs - warmup)))
         for g in optim.param_groups:
             g["lr"] = lr

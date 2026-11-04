@@ -1,5 +1,4 @@
-"""Two-view objectives. Each takes two batches of views and returns the loss;
-`self.encoder` is the network kept for fine-tuning."""
+"""Joint-embedding objectives; `encoder` is kept for fine-tuning."""
 import copy
 
 import torch
@@ -19,7 +18,6 @@ def frozen_copy(module):
 
 
 class MoCo(nn.Module):
-    """MoCo-v2 with a queue of negatives and a momentum encoder."""
 
     def __init__(self, encoder, proj_dim=128, proj_hidden=192, queue_size=16384, temperature=0.1,
                  momentum=(0.99, 0.999)):

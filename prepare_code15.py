@@ -1,9 +1,4 @@
-"""Convert CODE-15% (Zenodo 10.5281/zenodo.4916206) to the pretraining format:
-one (12, 1000) array per exam at 100 Hz, standardised per lead, first exam of
-each patient only.
-
-    python prepare_code15.py --src /path/to/code15 --dst data/code15
-"""
+"""python prepare_code15.py --src /path/to/code15 --dst data/code15"""
 import argparse
 from pathlib import Path
 
@@ -15,7 +10,7 @@ from scipy.signal import resample_poly
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--src", required=True, help="folder with exams.csv and exams_part*.hdf5")
+    ap.add_argument("--src", required=True)
     ap.add_argument("--dst", default="data/code15")
     args = ap.parse_args()
     src, dst = Path(args.src), Path(args.dst)
@@ -29,7 +24,7 @@ def main():
             for i, eid in enumerate(ids):
                 if eid not in keep:
                     continue
-                x = resample_poly(tracings[i], 1, 4, axis=0)[12:1012].T     # 400 Hz, 4096 samples -> 100 Hz, 10 s
+                x = resample_poly(tracings[i], 1, 4, axis=0)[12:1012].T
                 x = (x - x.mean(1, keepdims=True)) / (x.std(1, keepdims=True) + 1e-6)
                 np.save(dst / f"{eid}.npy", x.astype(np.float32))
                 n += 1

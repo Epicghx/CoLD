@@ -1,9 +1,4 @@
-"""Fine-tune a pretrained encoder on PTB-XL, keep the best validation macro-AUROC
-checkpoint and evaluate it on the test fold.
-
-    python finetune.py --config configs/finetune_ptbxl.yaml --ckpt runs/cold_vit/encoder.pt
-    python finetune.py --config configs/finetune_ptbxl.yaml --ckpt none          # from scratch
-"""
+"""python finetune.py --config configs/finetune_ptbxl.yaml --ckpt runs/cold_vit/encoder.pt"""
 import argparse
 import json
 from pathlib import Path
@@ -30,7 +25,6 @@ class Classifier(nn.Module):
 
 
 def param_groups(model, lr, wd, decay):
-    """Layer-wise learning-rate decay: the head gets lr, earlier layers lr * decay^depth."""
     enc = model.encoder
     if hasattr(enc, "blocks"):
         stages = [[enc.patch_embed, enc.lead_pe, enc.cls_token]] + [[b] for b in enc.blocks]
@@ -94,7 +88,7 @@ def main():
         va = PTBXL(d["root"], [9], d["label_set"], (tr.mu, tr.sd))
         te = PTBXL(d["root"], [10], d["label_set"], (tr.mu, tr.sd))
         frac = d.get("train_frac", 1.0)
-        if frac < 1:   # fixed subset shared by all models
+        if frac < 1:
             rng = np.random.RandomState(d.get("subset_seed", 1234))
             tr.idx = tr.idx[np.sort(rng.permutation(len(tr.idx))[:round(frac * len(tr.idx))])]
         k, Y_train = len(tr.classes), tr.Y[tr.idx]

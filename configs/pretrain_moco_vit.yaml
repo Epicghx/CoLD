@@ -1,4 +1,3 @@
-# MoCo-v2 with standard views (one global gain per view)
 name: moco_vit
 seed: 42
 data:
@@ -16,6 +15,6 @@ model:
 optim:
   epochs: 50
   batch_size: 256
-  blr: 1.5e-3          # lr = blr * batch_size / 256
+  blr: 1.5e-3
   wd: 0.05
   warmup: 5

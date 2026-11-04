@@ -1,13 +1,8 @@
-"""Two-view generation for 12-lead ECGs.
+"""Two augmented views of a 12-lead recording.
 
-Every view is cropped, resampled, shifted and noised (T_v in the paper). The
-amplitude step then applies one of three laws, and noise of the same SD is
-added to every lead once more, so the noise floor does not depend on the gain:
-  cold      per-lead gains and offsets drawn for both views from one Gaussian
-            copula with lead coefficient `lam` and view coefficient `rho`
-  standard  one global gain per view, U(0.9, 1.1), with noise added only after
-            the gain, as in the MoCo-v2 baseline
-  none      no amplitude change (the control)
+amp="cold"      per-lead gains and offsets from one Gaussian copula (lam, rho)
+amp="standard"  one global gain per view, U(0.9, 1.1)
+amp="none"      no amplitude change (the control)
 """
 import math
 import random
@@ -36,11 +31,7 @@ def crop_shift(x, crop_min=800, crop_max=1000, shift_max=50, noise_std=0.01):
 
 
 def copula_latents(C, lam, rho):
-    """Latent vectors (xi_1, xi_2) with N(0, 1) entries.
-
-    Two leads of one view have correlation lam, one lead in the two views rho,
-    and two different leads in the two views lam * rho.
-    """
+    """Latents of the two views: corr lam between leads, rho between views."""
     c = math.sqrt(max(0.0, 1.0 - rho * rho))
     a1, a_ = torch.randn(1), torch.randn(1)
     e1, e_ = torch.randn(C), torch.randn(C)
@@ -56,7 +47,7 @@ def normal_cdf(z):
 
 
 class CoLDSampler:
-    """Gains log-uniform in [s_min, s_max], offsets N(0, sigma_b^2), coupled by one copula."""
+    """Gains LogU(s_min, s_max) and offsets N(0, sigma_b^2) for both views."""
 
     def __init__(self, s_min=0.5, s_max=2.0, sigma_b=0.5, lam=0.0, rho=0.0):
         assert 0.0 <= lam <= 1.0 and 0.0 <= rho <= 1.0
@@ -65,7 +56,7 @@ class CoLDSampler:
 
     def __call__(self, C):
         xi1, xi2 = copula_latents(C, self.lam, self.rho)
-        zeta1, zeta2 = copula_latents(C, self.lam, self.rho)   # independent copy for the offsets
+        zeta1, zeta2 = copula_latents(C, self.lam, self.rho)
         span = self.log_max - self.log_min
         s1 = torch.exp(self.log_min + normal_cdf(xi1) * span)
         s2 = torch.exp(self.log_min + normal_cdf(xi2) * span)

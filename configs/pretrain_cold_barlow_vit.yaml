@@ -1,15 +1,14 @@
-# Barlow Twins + CoLD, ViT-Tiny
 name: cold_barlow_vit
 seed: 42
 data:
   root: data/code15
 views:
-  amp: cold            # cold | standard | none
-  s_min: 0.5           # gains log-uniform in [s_min, s_max]
+  amp: cold
+  s_min: 0.5
   s_max: 2.0
-  sigma_b: 0.5         # offset SD
-  lam: 0.0             # lead coefficient
-  rho: 0.0             # view coefficient
+  sigma_b: 0.5
+  lam: 0.0
+  rho: 0.0
   crop_min: 800
   crop_max: 1000
   shift_max: 50
@@ -21,6 +20,6 @@ model:
 optim:
   epochs: 50
   batch_size: 256
-  blr: 1.5e-3          # lr = blr * batch_size / 256
+  blr: 1.5e-3
   wd: 0.05
   warmup: 5

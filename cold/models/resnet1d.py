@@ -39,7 +39,6 @@ class Bottleneck(nn.Module):
 
 
 class ResNet1D(nn.Module):
-    """1D ResNet; the 12 leads enter as channels of the first convolution."""
 
     def __init__(self, block, layers, in_channels=12, base=64):
         super().__init__()

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Runs every stage on random signals; no data needed.
 set -e
 cd "$(dirname "$0")/.."
 python pretrain.py --config configs/pretrain_cold_vit.yaml --synthetic 64 --epochs 1 --batch_size 16 --out runs/smoke

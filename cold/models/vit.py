@@ -1,5 +1,4 @@
-"""Per-lead ViT-Tiny. Each lead is cut into patches of 32 samples, and the
-tokens of all 12 leads go through one Transformer, so attention fuses the leads."""
+"""ViT-Tiny with per-lead patches of 32 samples and attention across leads."""
 import math
 
 import torch
@@ -36,7 +35,7 @@ class PatchEmbed(nn.Module):
 
     def forward(self, x):
         B, L, T = x.shape
-        return self.proj(x.reshape(B * L, 1, T)).transpose(1, 2)   # (B*L, Tp, D)
+        return self.proj(x.reshape(B * L, 1, T)).transpose(1, 2)
 
 
 class ViTEncoder(nn.Module):
@@ -63,7 +62,6 @@ class ViTEncoder(nn.Module):
             nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        """(B, 12, 1024) -> (B, embed_dim), the mean over patch tokens."""
         B, L, _ = x.shape
         tok = self.patch_embed(x).reshape(B, L, self.Tp, self.embed_dim)
         tok = (tok + self.lead_pe + self.tpos_pe).reshape(B, L * self.Tp, self.embed_dim)
